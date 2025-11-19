@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
+# Import routers
+from app.routers import budget, practices, reports
+
 # Initialize FastAPI app
 app = FastAPI(
     title="Dental Budget API",
@@ -17,6 +20,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include routers
+app.include_router(budget.router)
+app.include_router(practices.router)
+app.include_router(reports.router)
 
 @app.get("/")
 async def root():
