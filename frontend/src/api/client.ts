@@ -31,6 +31,28 @@ export interface VarianceReport {
   line_items: any[];
 }
 
+export interface Token {
+  access_token: string;
+  token_type: string;
+}
+
+export interface UserCreate {
+  email: string;
+  full_name: string;
+  role: string;
+  practice_id?: number;
+  password: string;
+}
+
+export interface UserResponse {
+  id: number;
+  email: string;
+  full_name: string;
+  role: string;
+  practice_id?: number;
+  last_login?: string;
+}
+
 export interface PLReport {
   practice: Practice;
   start_date: string;
@@ -157,6 +179,37 @@ class ApiClient {
     return this.request<PLReport>(`/api/v1/reports/pl/${practiceId}?start_date=${startDate}&end_date=${endDate}`);
   }
 }
+
+  // ==================== Authentication API ====================
+
+  async login(email: string, password: string): Promise<ApiResponse<Token>> {
+    const formData = new URLSearchParams();
+    formData.append('username', email);
+    formData.append('password', password);
+
+    return this.request<Token>('/api/v1/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData,
+    });
+  }
+
+  async register(userData: UserCreate): Promise<ApiResponse<UserResponse>> {
+    return this.request<UserResponse>('/api/v1/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async getCurrentUser(): Promise<ApiResponse<UserResponse>> {
+    return this.request<UserResponse>('/api/v1/auth/me');
+  }
+
+  async logout(): Promise<void> {
+    localStorage.removeItem('access_token');
+  }
 
 export const apiClient = new ApiClient();
 export default apiClient;
