@@ -215,6 +215,25 @@ class PLReport(BaseModel):
 
 # ==================== Bulk Operations ====================
 
+# ==================== Authentication Schemas ====================
+
+class Token(BaseModel):
+    """JWT Token Response"""
+    access_token: str
+    token_type: str
+
+class UserResponse(BaseModel):
+    """User response without password"""
+    id: int
+    email: EmailStr
+    full_name: str
+    role: str
+    practice_id: Optional[int] = None
+    last_login: Optional[date] = None
+    
+    class Config:
+        from_attributes = True
+
 class BudgetLineBulkUpdate(BaseModel):
     """Bulk update multiple budget lines"""
     updates: List[dict] = Field(..., description="List of {id: int, budget_amount: Decimal}")
