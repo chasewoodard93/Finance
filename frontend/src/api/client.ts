@@ -14,6 +14,33 @@ export interface Budget {
   updated_at: string;
 }
 
+export interface Practice {
+  id: number;
+  name: string;
+  location: string;
+  status: string;
+}
+
+export interface VarianceReport {
+  practice: Practice;
+  period: any;
+  total_budget: number;
+  total_actual: number;
+  total_variance: number;
+  variance_percentage: number;
+  line_items: any[];
+}
+
+export interface PLReport {
+  practice: Practice;
+  start_date: string;
+  end_date: string;
+  total_revenue: number;
+  total_expenses: number;
+  net_income: number;
+  categories: any[];
+}
+
 export interface ApiResponse<T> {
   data: T;
   message?: string;
@@ -88,6 +115,46 @@ class ApiClient {
     return this.request<void>(`/api/budgets/${id}`, {
       method: 'DELETE',
     });
+  }
+
+    // ==================== Practices API ====================
+
+  async getPractices(): Promise<ApiResponse<Practice[]>> {
+    return this.request<Practice[]>('/api/v1/practices');
+  }
+
+  async getPractice(id: number): Promise<ApiResponse<Practice>> {
+    return this.request<Practice>(`/api/v1/practices/${id}`);
+  }
+
+  async createPractice(practice: Omit<Practice, 'id'>): Promise<ApiResponse<Practice>> {
+    return this.request<Practice>('/api/v1/practices', {
+      method: 'POST',
+      body: JSON.stringify(practice),
+    });
+  }
+
+  async updatePractice(id: number, practice: Partial<Practice>): Promise<ApiResponse<Practice>> {
+    return this.request<Practice>(`/api/v1/practices/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(practice),
+    });
+  }
+
+  async deletePractice(id: number): Promise<ApiResponse<void>> {
+    return this.request<void>(`/api/v1/practices/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // ==================== Reports API ====================
+
+  async getVarianceReport(practiceId: number, periodId: number): Promise<ApiResponse<VarianceReport>> {
+    return this.request<VarianceReport>(`/api/v1/reports/variance/${practiceId}/${periodId}`);
+  }
+
+  async getPLReport(practiceId: number, startDate: string, endDate: string): Promise<ApiResponse<PLReport>> {
+    return this.request<PLReport>(`/api/v1/reports/pl/${practiceId}?start_date=${startDate}&end_date=${endDate}`);
   }
 }
 
