@@ -31,6 +31,7 @@ class FiscalYear(Base):
     # Relationships
     practice = relationship("Practice", back_populates="fiscal_years")
     budget_lines = relationship("BudgetLine", back_populates="fiscal_year")
+        budget_periods = relationship("BudgetPeriod", back_populates="fiscal_year")
 
 class AccountCategory(Base):
     """Account Category Model for P&L Structure"""
@@ -53,21 +54,4 @@ class BudgetLine(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     practice_id = Column(Integer, ForeignKey("practices.id"), nullable=False)
-    fiscal_year_id = Column(Integer, ForeignKey("fiscal_years.id"), nullable=False)
-    category_id = Column(Integer, ForeignKey("account_categories.id"), nullable=False)
-    month = Column(Integer, nullable=False)  # 1-12
-    
-    # Budget amounts
-    budget_amount = Column(Numeric(15, 2), default=0)
-    actual_amount = Column(Numeric(15, 2), default=0)
-    variance = Column(Numeric(15, 2), default=0)
-    
-    # Metadata
-    notes = Column(Text)
-    created_at = Column(Date, default=datetime.utcnow)
-    updated_at = Column(Date, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    # Relationships
-    practice = relationship("Practice", back_populates="budget_lines")
-    fiscal_year = relationship("FiscalYear", back_populates="budget_lines")
-    category = relationship("AccountCategory", back_populates="budget_lines")
+    budget_period_id = Column(Integer, ForeignKey("budget_periods.id"), nullable=False)
